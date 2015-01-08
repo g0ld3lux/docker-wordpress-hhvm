@@ -15,6 +15,7 @@ docker pull "$baseimage"
 
 WORKDIR="$(mktemp -t -d $(realpath --relative-to=.. .).XXXXXX)"
 cp Dockerfile "$WORKDIR"/
+cp -ra contrib "$WORKDIR"/
 (cd "$WORKDIR"; \
 sed -i \
   -e "/^FROM/c\FROM $baseimage" \

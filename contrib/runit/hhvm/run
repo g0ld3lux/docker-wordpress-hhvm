@@ -1,0 +1,40 @@
+#!/bin/bash
+
+source /etc/envvars
+exec 2>&1
+
+if [[ ! -d /var/log/hhvm ]]; then
+	mkdir -p /var/log/hhvm
+fi
+chown owner /var/log/hhvm
+
+if [[ ! -d /var/cache/hhvm ]]; then
+	mkdir -p /var/cache/hhvm
+fi
+chown -R owner /var/cache/hhvm
+
+if [[ ! -d /home/owner ]]; then
+	mkdir -p /home/owner
+fi
+chown owner /home/owner
+
+#if [[ ! -f /var/cache/hhvm/hhvm.hhbc ]]; then
+#	echo "Pre-generating cache for HHVM"
+#	cd /var/www/html
+#
+#	TEMPFILE=$(mktemp)
+#	find -name '*.php' -type f > $TEMPFILE \
+#	&& chmod a+r $TEMPFILE \
+#	&& /usr/bin/chpst -u owner:www-data \
+#		/usr/bin/hhvm --hphp --target hhbc -k1 -l3 \
+#		--input-list "${TEMPFILE}" --include-path="./" --output-dir /var/cache/hhvm
+#	rm $TEMPFILE
+#	unset TEMPFILE
+#fi
+
+echo "Starting HHVM"
+HHVM_MAXPROCS=$((2 + $(nproc) ))
+cd /var/www/html
+exec /usr/bin/chpst -u owner:www-data -p ${HHVM_MAXPROCS} \
+	/usr/bin/hhvm --mode server -vRepo.Central.Path=/var/cache/hhvm/hhvm.hhbc -vServer.Type=fastcgi -vServer.Port=9000
+

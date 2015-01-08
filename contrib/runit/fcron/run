@@ -1,0 +1,14 @@
+#!/bin/bash
+
+source /etc/envvars
+exec 2>&1
+
+if ! [[ -e /etc/fcrontab ]]; then
+	cp /usr/contrib/fcrontab /etc/fcrontab
+fi
+fcrontab /etc/fcrontab >/dev/null
+
+echo "Starting FCRON"
+exec /usr/bin/chpst -p 16 \
+	/usr/libexec/fcron --foreground --nosyslog
+

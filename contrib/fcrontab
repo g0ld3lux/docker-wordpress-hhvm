@@ -1,0 +1,23 @@
+# &  -  classic cron syntax
+# @  -  frequency or timespan (every 30 minutes; with options: best moment within every 30 minutes)
+# %  -  (once) within time interval
+
+# classic cron syntax:
+#
+# *     *     *   *    *        command to be executed
+# -     -     -   -    -
+# |     |     |   |    |
+# |     |     |   |    +----- day of week (0 - 6) (Sunday=0)
+# |     |     |   +------- month (1 - 12)
+# |     |     +--------- day of month (1 - 31)
+# |     +----------- hour (0 - 23)
+# +------------- min (0 - 59)
+#
+
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:/root/bin
+
+@first(5),nolog,mail(no)	10		owner	"curl -L --insecure -s https://127.0.0.1/wp-cron.php >/dev/null"
+
+%nice(10),nightly,mail(no)	* 3-5		root	"/usr/contrib/mariadb/mysql-backup.sh"
+

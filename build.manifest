@@ -186,12 +186,14 @@ ncurses-base 	 6.0+20151024-2ubuntu2
 ncurses-bin 	 6.0+20151024-2ubuntu2
 nginx-common 	 1.9.11-0ubuntu2
 nginx-light 	 1.9.11-0ubuntu2
+openssl 	 1.0.2f-8bn
 passwd 	 1:4.2-3.1ubuntu2
 patch 	 2.7.5-1
 perl 	 5.22.1-7
 perl-base 	 5.22.1-7
 perl-modules-5.22 	 5.22.1-7
 plzip 	 1.4-1
+psmisc 	 22.21-2.1build1
 readline-common 	 6.3-8ubuntu2
 redis-server 	 2:3.0.6-1
 redis-tools 	 2:3.0.6-1
@@ -204,6 +206,7 @@ subversion 	 1.9.3-1ubuntu1
 sysv-rc 	 2.88dsf-59.3ubuntu2
 sysvinit-utils 	 2.88dsf-59.3ubuntu2
 tar 	 1.28-2.1
+tree 	 1.7.0-3
 tzdata 	 2016a-1
 ubuntu-keyring 	 2012.05.19
 ucf 	 3.0035

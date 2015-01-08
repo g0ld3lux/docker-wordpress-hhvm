@@ -1,0 +1,10 @@
+#!/bin/sh
+
+code=$1
+status=$2
+hostname=$(hostname)
+if [ $status -ne 0 ]; then
+	echo "Nginx FAILED on $hostname: $code, $status"
+else
+ 	echo "Nginx stopped on $hostname: $code, $status"
+fi
