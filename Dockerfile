@@ -84,7 +84,16 @@ RUN useradd -u 1001 -s /bin/bash -g users -G fcron,www-data -M --home-dir=/home/
  && egrep -m 1 "^.wp_version" /var/www/html/wp-includes/version.php | tr -d "$;' " | sed -e 's:wp_:wordpress.:'
 
 # … and plugins
-
+RUN curl --silent --show-error --fail --location \
+      --header "Accept: application/zip" \
+      --pinnedpubkey "sha256//SU4VjMOqJpxC5lQIW5u1X4ogo0sitEsI1fD/FyF44+g=" \
+      -o /tmp/mailgun.zip \
+      $(curl -sSfL https://api.wordpress.org/plugins/info/1.0/mailgun.json | jq -r '.download_link') \
+ && unzip /tmp/mailgun.zip -d /var/www/html/wp-content/plugins/ && rm /tmp/mailgun.zip \
+ && cd /var/www/html/wp-content/plugins \
+ && git clone --depth=1 https://github.com/wmark/CDN-Linker.git \
+ && rm -rf CDN-Linker/.git CDN-Linker/test CDN-Linker/test.php \
+ && chown -R owner:www-data /var/www/html/wp-content/plugins
 
 # XXX: Add configuration files.
 

@@ -22,6 +22,10 @@ sed -i \
   -e "s#https://#http://#g" \
   -e "s:x86_64-linux-gnu:${chost}:g" \
   Dockerfile && \
+sed -i \
+  -e "/api.wordpress/s#http://#https://#" \
+  -e "/git clone/s#http://#https://#" \
+  Dockerfile && \
 docker build --rm \
   --build-arg=http_proxy=$(/usr/share/squid-deb-proxy-client/apt-avahi-discover) \
   -t "local/wordpress-hhvm" .)
