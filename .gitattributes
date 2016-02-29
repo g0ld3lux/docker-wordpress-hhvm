@@ -1,0 +1,11 @@
+*.conf text=auto
+*.crt text=auto
+*.md text=auto
+*.sh text eol=lf
+
+.dockerignore text=auto
+.gitattributes text=auto
+Dockerfile text eol=lf
+finish text eol=lf
+fcrontab text eol=lf
+run text eol=lf
