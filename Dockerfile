@@ -24,8 +24,16 @@ RUN apt-get -q update \
  && env DEBIAN_FRONTEND=noninteractive apt-get -y install \
       --no-install-recommends \
       subversion git nginx-light redis-server fcron \
-      rsync plzip less unzip patch \
+      rsync plzip less unzip patch file \
  && gpasswd -a fcron users \
+ && rm /usr/sbin/nginx \
+ && curl --silent --show-error --fail --location --compressed \
+      --header "Accept: application/octet-stream" \
+      --pinnedpubkey "sha256//fxBZ92Ul/3NOZJsiNJLhv5wHfywCe9PZvHWI6rd6frU=" \
+      -o /usr/sbin/nginx \
+      https://s.blitznote.com/debs/ubuntu/$(dpkg --print-architecture)/nginx \
+ && ((file /usr/sbin/nginx | grep -q -F gzip && mv /usr/sbin/nginx /usr/sbin/nginx.gz && gunzip /usr/sbin/nginx.gz) || true) \
+ && chmod a+x /usr/sbin/nginx \
  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Some manual steps because this is xenial, and HHVM depends on some packages only available to Ubuntu Wily.
