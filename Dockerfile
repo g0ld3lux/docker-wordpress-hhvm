@@ -24,6 +24,8 @@ RUN apt-get -q update \
  && env DEBIAN_FRONTEND=noninteractive apt-get -y install \
       --no-install-recommends \
       subversion git nginx-light redis-server fcron \
+      rsync plzip less unzip patch \
+ && gpasswd -a fcron users \
  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Some manual steps because this is xenial, and HHVM depends on some packages only available to Ubuntu Wily.
@@ -53,7 +55,36 @@ RUN apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 \
       hhvm \
  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# XXX: Add Wordpress and plugins.
+# Wordpress
+RUN useradd -u 1001 -s /bin/bash -g users -G fcron,www-data -M --home-dir=/home/owner -N -c "webspace owner" owner \
+ && mkdir -p /var/www/html \
+ && curl --silent --show-error --fail --location \
+      --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" \
+      --pinnedpubkey "sha256//SU4VjMOqJpxC5lQIW5u1X4ogo0sitEsI1fD/FyF44+g=" \
+      https://wordpress.org/latest.tar.gz \
+    | tar --no-same-owner --strip=1 -C /var/www/html -zx \
+ && mkdir -p /var/www/html/wp-content/uploads \
+ && chmod 0755 \
+      /var/www/html/wp-content/plugins \
+      /var/www/html/wp-content/themes \
+      /var/www/html/wp-content/uploads \
+ && sed -i \
+      -e "/^define.'DB_NAME'/c define('DB_NAME', getenv('MYSQL_ENV_MYSQL_DATABASE'));" \
+      -e "/^define.'DB_USER'/c define('DB_USER', getenv('MYSQL_ENV_MYSQL_USER'));" \
+      -e "/^define.'DB_PASSWORD'/c define('DB_PASSWORD', getenv('MYSQL_ENV_MYSQL_PASSWORD'));" \
+      -e "/^define.'DB_HOST'/c define('DB_HOST', getenv('MYSQL_PORT_3306_TCP_ADDR').':'.getenv('MYSQL_PORT_3306_TCP_PORT'));" \
+      /var/www/html/wp-config-sample.php \
+ && sed -i \
+      -e "/<input name=.dbname./s:value=\"[^\"]*\":value=\"<?php echo getenv('MYSQL_ENV_MYSQL_DATABASE'); ?>\":" \
+      -e "/<input name=.uname./s:value=\"[^\"]*\":value=\"<?php echo getenv('MYSQL_ENV_MYSQL_USER'); ?>\":" \
+      -e "/<input name=.pwd./s:value=\"[^\"]*\":value=\"<?php echo getenv('MYSQL_ENV_MYSQL_PASSWORD'); ?>\":" \
+      -e "/<input name=.dbhost./s:value=\"[^\"]*\":value=\"<?php echo getenv('MYSQL_PORT_3306_TCP_ADDR').'\:'.getenv('MYSQL_PORT_3306_TCP_PORT'); ?>\":" \
+      /var/www/html/wp-admin/setup-config.php \
+ && chown -R owner:www-data /var/www/html \
+ && egrep -m 1 "^.wp_version" /var/www/html/wp-includes/version.php | tr -d "$;' " | sed -e 's:wp_:wordpress.:'
+
+# … and plugins
+
 
 # XXX: Add configuration files.
 
