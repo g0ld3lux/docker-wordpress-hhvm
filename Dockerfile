@@ -41,6 +41,7 @@ RUN apt-get -q update \
 RUN curl -o /tmp/libgnutls-deb0-28.deb -fsSL \
       http://de.archive.ubuntu.com/ubuntu/pool/main/g/gnutls28/libgnutls-deb0-28_3.3.15-5ubuntu2_$(dpkg --print-architecture).deb \
  && dpkg --install /tmp/libgnutls-deb0-28.deb && rm /tmp/libgnutls-deb0-28.deb \
+ && printf "/usr/lib\n" >> /etc/ld.so.conf.d/xxx99.conf \
  && printf "\nPackage: libvpx2\nStatus: install ok installed\nVersion: 1.4.0-4\nDepends: libvpx3\nArchitecture: $(dpkg --print-architecture)\nDescription: alias for libvpx3\nMaintainer: Nobody <noreply@blitznote.de>\n\n" >> /var/lib/dpkg/status \
     && ln -s libvpx.so.3     /usr/lib/x86_64-linux-gnu/libvpx.so.2 \
     && ln -s libvpx.so.3.0   /usr/lib/x86_64-linux-gnu/libvpx.so.2.0 \
@@ -120,11 +121,12 @@ RUN mkdir -p /etc/ssl/web && chmod 0750 /etc/ssl/web \
       -out "/etc/ssl/web/web.crt-bundle" \
  && chmod 0600 "/etc/ssl/web/web.key" \
  && /usr/sbin/nginx -t \
+ && /usr/bin/hhvm --version \
  && rm "/etc/ssl/web/web.key" "/etc/ssl/web/web.crt-bundle"
 
 # 80    for HTTP, 443 for HTTPS
 # 6379  for the included Redis instance
 # 9000  is the HHVM server port
 EXPOSE 80 443 6379 9000
-VOLUME /var/www/backup /var/www/html /var/log /etc/ssl/web
+VOLUME /var/www/backup /var/www/html /var/log
 CMD ["/sbin/runit-bootstrap.sh"]
