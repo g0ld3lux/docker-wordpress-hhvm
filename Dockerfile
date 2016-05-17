@@ -10,8 +10,7 @@ RUN printf "deb [arch=$(dpkg --print-architecture) trusted=yes] https://s.blitzn
 # In order to avoid creating a single very large layer 
 # this has intentionally been split.
 
-RUN apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 \
-      0xcbcb082a1bb943db \
+RUN curl -fsLS "https://keyserver.ubuntu.com/pks/lookup?op=get&fingerprint=on&search=0xcbcb082a1bb943db" | apt-key add \
  && printf "deb [arch=$(dpkg --print-architecture)] http://ftp.igh.cnrs.fr/pub/mariadb/repo/10.1/ubuntu wily main" > /etc/apt/sources.list.d/mariadb.list \
  && apt-get -q update \
  && env DEBIAN_FRONTEND=noninteractive apt-get -y install \
@@ -56,8 +55,7 @@ RUN curl -o /tmp/libgnutls-deb0-28.deb -fsSL \
       libboost-thread1.58.0 libboost-context1.58.0 \
  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 \
-      0x5a16e7281be7a449 \
+RUN curl -fsLS "https://keyserver.ubuntu.com/pks/lookup?op=get&fingerprint=on&search=0x5a16e7281be7a449" | apt-key add \
  && printf "deb [arch=$(dpkg --print-architecture)] http://dl.hhvm.com/ubuntu wily-lts-3.12 main" > /etc/apt/sources.list.d/hhvm.list \
  && apt-get -q update \
  && env DEBIAN_FRONTEND=noninteractive apt-get -y install \
