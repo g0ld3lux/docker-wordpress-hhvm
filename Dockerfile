@@ -39,13 +39,13 @@ RUN apt-get -q update \
 # Some manual steps because this is xenial, and HHVM depends on some packages only available to Ubuntu Wily.
 RUN curl -o /tmp/libgnutls-deb0-28.deb -fsSL \
       http://de.archive.ubuntu.com/ubuntu/pool/main/g/gnutls28/libgnutls-deb0-28_3.3.15-5ubuntu2_$(dpkg --print-architecture).deb \
- && dpkg --install /tmp/libgnutls-deb0-28.deb && rm /tmp/libgnutls-deb0-28.deb \
+ && apt-get -q update \
+ && apt-get -y install /tmp/libgnutls-deb0-28.deb && rm /tmp/libgnutls-deb0-28.deb \
  && printf "/usr/lib\n" >> /etc/ld.so.conf.d/xxx99.conf \
  && printf "\nPackage: libvpx2\nStatus: install ok installed\nVersion: 1.4.0-4\nDepends: libvpx3\nArchitecture: $(dpkg --print-architecture)\nDescription: alias for libvpx3\nMaintainer: Nobody <noreply@blitznote.de>\n\n" >> /var/lib/dpkg/status \
     && ln -s libvpx.so.3     /usr/lib/x86_64-linux-gnu/libvpx.so.2 \
     && ln -s libvpx.so.3.0   /usr/lib/x86_64-linux-gnu/libvpx.so.2.0 \
     && ln -s libvpx.so.3.0.0 /usr/lib/x86_64-linux-gnu/libvpx.so.2.0.0 \
- && apt-get -q update \
  && env DEBIAN_FRONTEND=noninteractive apt-get -y -f install \
  && env DEBIAN_FRONTEND=noninteractive apt-get -y install \
       --no-install-recommends \
