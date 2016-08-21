@@ -1,19 +1,17 @@
-# Webserver and HHVM, ready for Wordpress.
-# This is used to test plugins such as CDN Linker.
-
 FROM blitznote/debootstrap-amd64:16.04
 MAINTAINER W. Mark Kubacki <wmark@hurrikane.de>
-
-RUN printf 'Package: *\nPin: origin "s.blitznote.com"\nPin-Priority: 510\n' > /etc/apt/preferences.d/prefer-blitznote
+LABEL org.label-schema.vendor="W. Mark Kubacki" \
+      org.label-schema.name="Wordpress, Nginx, HHVM stack for CI/CD" \
+      org.label-schema.vcs-type="git" \
+      org.label-schema.vcs-url="https://github.com/wmark/docker-wordpress-hhvm"
 
 # In order to avoid creating a single very large layer
 # this has intentionally been split.
-
-RUN /usr/bin/get-gpg-key 0xcbcb082a1bb943db | apt-key add \
+RUN printf 'Package: *\nPin: origin "s.blitznote.com"\nPin-Priority: 510\n' >/etc/apt/preferences.d/prefer-blitznote \
+ && /usr/bin/get-gpg-key 0xcbcb082a1bb943db | apt-key add \
  && printf "deb [arch=$(dpkg --print-architecture)] http://ftp.igh.cnrs.fr/pub/mariadb/repo/10.1/ubuntu wily main" > /etc/apt/sources.list.d/mariadb.list \
  && apt-get -q update \
- && apt-get -y install \
-      --no-install-recommends \
+ && apt-get --allow-downgrades --no-install-recommends -y install \
       mariadb-client \
  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

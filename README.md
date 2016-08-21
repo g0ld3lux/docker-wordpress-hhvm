@@ -4,7 +4,7 @@ Nginx, Redis, Wordpress, HHVM
 **HHVM** runs **Wordpress** behind **Nginx**/BoringSSL.
 Comes with plugin for/from **Mailgun.org**, and **CDN Linker**, which caches to **Redis** if you enable that.
 
-[![](https://badge.imagelayers.io/wmark/wordpress-hhvm:latest.svg)](https://imagelayers.io/?images=wmark/wordpress-hhvm:latest 'Get your own badge on imagelayers.io')
+[![](https://images.microbadger.com/badges/image/wmark/wordpress-hhvm.svg)](http://microbadger.com/images/wmark/wordpress-hhvm "Get your own image badge on microbadger.com")
 
 Starting the container triggers database(s) restore from backups (if available and need be),
 and creates daily backups to another volume (listed below).
