@@ -22,6 +22,8 @@ RUN apt-get -q update \
       subversion git nginx-light redis-server fcron \
       rsync plzip less unzip patch file psmisc tree \
       openssl \
+      libjemalloc1=3.* \
+ && apt-mark hold libjemalloc1 \
  && gpasswd -a fcron users \
  && rm /usr/sbin/nginx \
  && curl --silent --show-error --fail --location --compressed \
