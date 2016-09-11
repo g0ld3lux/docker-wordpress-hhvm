@@ -7,16 +7,16 @@ LABEL org.label-schema.vendor="W. Mark Kubacki" \
 
 # In order to avoid creating a single very large layer
 # this has intentionally been split.
+# Subversion is needed for Wordpress, and GIT for some plugins.
+# Redis for caching by CDN Linker Pro.
+# fcron is used to trigger Wordpress' cronjobs and daily backups.
 RUN printf 'Package: *\nPin: origin "s.blitznote.com"\nPin-Priority: 510\n' >/etc/apt/preferences.d/prefer-blitznote \
  && /usr/bin/get-gpg-key 0xcbcb082a1bb943db 0xF1656F24C74CD1D8 | apt-key add \
  && printf "deb [arch=$(dpkg --print-architecture)] http://ftp.igh.cnrs.fr/pub/mariadb/repo/10.1/ubuntu xenial main" >/etc/apt/sources.list.d/mariadb.list \
  && apt-get -q update \
- && apt-get --allow-downgrades --no-install-recommends -y install \
+ && apt-get -y install \
+      --allow-downgrades --no-install-recommends \
       mariadb-client \
- && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Subversion is needed for Wordpress, and GIT for some plugins.
-RUN apt-get -q update \
  && apt-get -y install \
       --no-install-recommends \
       subversion git nginx-light redis-server fcron \
