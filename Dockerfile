@@ -41,6 +41,10 @@ RUN /usr/bin/get-gpg-key 0x5a16e7281be7a449 | apt-key add \
  && apt-get -y install \
       --no-install-recommends \
       hhvm \
+ && sed -i \
+      -e '/hhvm.repo.central.path/c hhvm.repo.central.path = /var/cache/hhvm/hhvm.hhbc' \
+      /etc/hhvm/server.ini \
+ && printf "hhvm.eval.jit = true\n" >>/etc/hhvm/server.ini \
  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Wordpress

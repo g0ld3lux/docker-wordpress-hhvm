@@ -18,23 +18,20 @@ if [[ ! -d /home/owner ]]; then
 fi
 chown owner /home/owner
 
-#if [[ ! -f /var/cache/hhvm/hhvm.hhbc ]]; then
-#	echo "Pre-generating cache for HHVM"
-#	cd /var/www/html
-#
-#	TEMPFILE=$(mktemp)
-#	find -name '*.php' -type f > $TEMPFILE \
-#	&& chmod a+r $TEMPFILE \
-#	&& /usr/bin/chpst -u owner:www-data \
-#		/usr/bin/hhvm --hphp --target hhbc -k1 -l3 \
-#		--input-list "${TEMPFILE}" --include-path="./" --output-dir /var/cache/hhvm
-#	rm $TEMPFILE
-#	unset TEMPFILE
-#fi
+if [[ ! -s /var/cache/hhvm/hhvm.hhbc ]]; then
+  echo "Pre-generating cache for HHVM"
+  /usr/bin/chpst -u owner:www-data \
+    /usr/bin/hhvm --hphp --target hhbc \
+      -v AllVolatile=true \
+      --output-dir /var/cache/hhvm \
+      --input-dir /var/www/html
+fi
 
 echo "Starting HHVM"
 HHVM_MAXPROCS=$((2 + $(nproc) ))
 cd /var/www/html
 exec /usr/bin/chpst -u owner:www-data -p ${HHVM_MAXPROCS} \
-	/usr/bin/hhvm --mode server -vRepo.Central.Path=/var/cache/hhvm/hhvm.hhbc -vServer.Type=fastcgi -vServer.Port=9000
-
+  /usr/bin/hhvm \
+    -v Eval.Jit=1 \
+    -v Server.SourceRoot=/var/www/html \
+    --mode server -v Server.Type=fastcgi -v Server.Port=9000
