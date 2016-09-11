@@ -21,7 +21,7 @@ RUN printf 'Package: *\nPin: origin "s.blitznote.com"\nPin-Priority: 510\n' >/et
       --no-install-recommends \
       subversion git nginx-light redis-server fcron \
       rsync plzip less unzip patch file psmisc tree \
-      openssl \
+      openssl dhtool \
       libjemalloc1=3.* \
  && apt-mark hold libjemalloc1 \
  && gpasswd -a fcron users \
@@ -98,6 +98,7 @@ RUN mkdir -p /etc/ssl/web && chmod 0750 /etc/ssl/web \
       -key "/etc/ssl/web/web.key" \
       -out "/etc/ssl/web/web.crt-bundle" \
  && chmod 0600 "/etc/ssl/web/web.key" \
+ && dhtool 2048 >/dev/null 2>/etc/ssl/web/dhparam.pem \
  && /usr/sbin/nginx -t \
  && /usr/bin/hhvm --version \
  && rm "/etc/ssl/web/web.key" "/etc/ssl/web/web.crt-bundle"
