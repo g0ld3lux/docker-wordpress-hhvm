@@ -33,27 +33,8 @@ RUN apt-get -q update \
  && chmod a+x /usr/sbin/nginx \
  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Some manual steps because this is xenial, and HHVM depends on some packages only available to Ubuntu Wily.
-RUN curl -o /tmp/libgnutls-deb0-28.deb -fsSL \
-      http://de.archive.ubuntu.com/ubuntu/pool/main/g/gnutls28/libgnutls-deb0-28_3.3.15-5ubuntu2_$(dpkg --print-architecture).deb \
- && apt-get -q update \
- && apt-get -y install /tmp/libgnutls-deb0-28.deb && rm /tmp/libgnutls-deb0-28.deb \
- && printf "/usr/lib\n" >> /etc/ld.so.conf.d/xxx99.conf \
- && printf "\nPackage: libvpx2\nStatus: install ok installed\nVersion: 1.4.0-4\nDepends: libvpx3\nArchitecture: $(dpkg --print-architecture)\nDescription: alias for libvpx3\nMaintainer: Nobody <noreply@blitznote.de>\n\n" >> /var/lib/dpkg/status \
-    && ln -s libvpx.so.3     /usr/lib/x86_64-linux-gnu/libvpx.so.2 \
-    && ln -s libvpx.so.3.0   /usr/lib/x86_64-linux-gnu/libvpx.so.2.0 \
-    && ln -s libvpx.so.3.0.0 /usr/lib/x86_64-linux-gnu/libvpx.so.2.0.0 \
- && apt-get -y -f install \
- && apt-get -y install \
-      --no-install-recommends \
-      imagemagick-common fonts-dejavu-core libmagickcore-6.q16-2 libmagickwand-6.q16-2 \
-      binutils libglib2.0-0 libc-client2007e \
-      libboost-system1.58.0 libboost-regex1.58.0 libboost-filesystem1.58.0 libboost-program-options1.58.0 \
-      libboost-thread1.58.0 libboost-context1.58.0 \
- && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 RUN /usr/bin/get-gpg-key 0x5a16e7281be7a449 | apt-key add \
- && printf "deb [arch=$(dpkg --print-architecture)] http://dl.hhvm.com/ubuntu wily-lts-3.12 main" > /etc/apt/sources.list.d/hhvm.list \
+ && printf "deb [arch=$(dpkg --print-architecture)] http://dl.hhvm.com/ubuntu xenial main\n" >/etc/apt/sources.list.d/hhvm.list \
  && apt-get -q update \
  && apt-get -y install \
       --no-install-recommends \
